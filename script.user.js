@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube Live Chat Mentions + Channel Link
 // @namespace      https://github.com/jimorosuto
-// @version        0.1.0
+// @version        0.2.0
 // @description    UserScript for YouTube Live Chat. Left-click a name to mention, middle-click to visit channel.
 // @description:ru Скрипт для чата стрима в YouTube. Клик по имени — упоминание, клик средней кнопкой — переход на канал.
 // @author         jimorosuto
@@ -48,7 +48,7 @@
         e.preventDefault()
         e.stopPropagation()
 
-        const nick = `@${e.target.innerText}\xa0`
+        const nick = `${e.target.innerText}\xa0`
         editableField.innerText = nick + editableField.innerText
         editableField.dispatchEvent(new Event('input'))
 
