@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name           YouTube Live Chat Mentions + Channel Link
 // @namespace      https://github.com/jimorosuto
-// @version        0.2.0
-// @description    UserScript for YouTube Live Chat. Left-click a name to mention, middle-click to visit channel.
-// @description:ru Скрипт для чата стрима в YouTube. Клик по имени — упоминание, клик средней кнопкой — переход на канал.
+// @version        0.3.0
+// @description    UserScript for YouTube Live Chat. Left-click a name to mention, middle-click to visit channel. Ctrl+Enter to send message without clearing input.
+// @description:ru Скрипт для чата стрима в YouTube. Клик по имени — упоминание, клик средней кнопкой — переход на канал. Ctrl+Enter — отправить сообщение, не очищая поле ввода.
 // @author         jimorosuto
 // @license        MIT
 // @match          https://www.youtube.com/*
@@ -78,6 +78,33 @@
 
         window.open(`https://www.youtube.com/channel/${chanId}`, '_blank')
     }
+
+    document.addEventListener('keydown', e => {
+        if (e.ctrlKey && e.key === 'Enter' && editableField) {
+            e.preventDefault()
+            e.stopPropagation()
+
+            const savedContent = Array.from(editableField.childNodes).map(n => n.cloneNode(true))
+            const sendButton = document.querySelector('#send-button button')
+            if (!sendButton) return
+
+            sendButton.click()
+
+            setTimeout(() => {
+                editableField.textContent = ''
+                savedContent.forEach(node => editableField.appendChild(node))
+                editableField.dispatchEvent(new Event('input'))
+                editableField.focus()
+
+                const sel = window.getSelection()
+                const range = document.createRange()
+                range.selectNodeContents(editableField)
+                range.collapse(false)
+                sel.removeAllRanges()
+                sel.addRange(range)
+            }, 50)
+        }
+    })
 
     chat.addEventListener('click', onNickClick, true)
     chat.addEventListener('auxclick', onNickMiddleClick, true)
